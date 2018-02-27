@@ -62,7 +62,7 @@ def main():
     if options['--listcolors']:
         print '\n'.join(x[0] for x in colorListing)
         return
-    patternMap = dict(x.split('=') for x in options['--pattern'])
+    patternMap = {y[0].strip(): y[1].strip() for y in (x.split('=') for x in options['--pattern'])}
 
     def addColor(line, colorNames):
       colorSequence = None
