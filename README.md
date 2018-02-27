@@ -12,6 +12,18 @@ files with your coworker or manager.
 
 ### Usage
 
+Assume we have a file with the following contents.
+
+    This is an interesting line with some awesome content.
+    unrelated line
+    unrelated line
+    unrelated line
+    foobar
+    Different topic=Red
+    unrelated line
+
+Then we can run the following commands to see some of effects we want.
+
     colorize.py -h
     colorize.py -l
     colorize.py -p 'This is an interesting line=Blue' Input.log
