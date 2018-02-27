@@ -1,4 +1,4 @@
-# ColorizeLines.py
+# colorize.py
 
 There is at least one [existing tool](http://pygments.org/) to perform
 automatic syntax highlighting of code and output ANSI escape sequences.
