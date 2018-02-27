@@ -8,7 +8,7 @@ import codecs
 
 from signal import signal, SIGPIPE, SIG_DFL
 
-colorListing = [
+colorListing = map(lambda x: (x[0].strip(), x[1].strip()), [
 ("Black            " , "30"),
 ("Red              " , "31"),
 ("Green            " , "32"),
@@ -41,7 +41,7 @@ colorListing = [
 ("BG_Bright Magenta" , "105"),
 ("BG_Bright Cyan   " , "106"),
 ("BG_Bright White  " , "107"),
-]
+])
 colorMap = {x[0].strip() : x[1] for x in colorListing}
 colorPrefix = '\033['
 colorSuffix = 'm'
@@ -69,7 +69,7 @@ def main():
     signal(SIGPIPE,SIG_DFL)
     options = docopt(doc)
     if options['--listcolors']:
-        print '\n'.join(x[0] for x in colorListing)
+        print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
     patternMap = {y[0].strip(): y[1].strip() for y in (x.split('=') for x in options['--pattern'])}
     # Validate items
