@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from sys import argv, stdin
+from sys import argv, stdin, stderr
 from docopt import docopt
 from collections import defaultdict
 import re
@@ -47,6 +47,15 @@ colorPrefix = '\033['
 colorSuffix = 'm'
 colorReset = colorPrefix + '0' + colorSuffix
 
+def addColor(line, colorNames):
+  colorSequence = None
+  if '|' not in colorNames:
+    colorSequence = colorPrefix + colorMap[colorNames] + colorSuffix
+  else:
+    colorSequence = colorPrefix + ';'.join(colorMap[x] for x in colorNames.split("|")) + colorSuffix
+  return "%s%s%s" % (colorSequence, line, colorReset)
+
+
 doc = r"""
 Usage: ./colorize.py [-h] [-l] [-p <pattern>]... [<input> ...]
 
@@ -63,14 +72,11 @@ def main():
         print '\n'.join(x[0] for x in colorListing)
         return
     patternMap = {y[0].strip(): y[1].strip() for y in (x.split('=') for x in options['--pattern'])}
-
-    def addColor(line, colorNames):
-      colorSequence = None
-      if '|' not in colorNames:
-        colorSequence = colorPrefix + colorMap[colorNames] + colorSuffix
-      else:
-        colorSequence = colorPrefix + ';'.join(colorMap[x] for x in colorNames.split("|")) + colorSuffix
-      return "%s%s%s" % (colorSequence, line, colorReset)
+    # Validate items
+    for x,y in patternMap.items():
+        if y not in colorMap:
+            print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
+            del patternMap[x]
 
     def colorize(f):
       for line in f:
