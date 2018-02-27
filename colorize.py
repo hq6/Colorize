@@ -8,7 +8,7 @@ import codecs
 
 from signal import signal, SIGPIPE, SIG_DFL
 
-colorMap = {x[0].strip() : x[1] for x in [
+colorListing = [
 ("Black            " , "30"),
 ("Red              " , "31"),
 ("Green            " , "32"),
@@ -41,22 +41,27 @@ colorMap = {x[0].strip() : x[1] for x in [
 ("BG_Bright Magenta" , "105"),
 ("BG_Bright Cyan   " , "106"),
 ("BG_Bright White  " , "107"),
-]}
+]
+colorMap = {x[0].strip() : x[1] for x in colorListing}
 colorPrefix = '\033['
 colorSuffix = 'm'
 colorReset = colorPrefix + '0' + colorSuffix
 
 doc = r"""
-Usage: ./colorize.py [-h] [-p <pattern>]... [<input> ...]
+Usage: ./colorize.py [-h] [-l] [-p <pattern>]... [<input> ...]
 
     -h,--help                  show this
     -p,--pattern <pattern>     specify the pattern in "pattern=color" form.
+    -l,--listcolors            show the list of possible colors
 """
 def main():
     # Handle broken pipes when piping the output of this process to other
     # processes.
     signal(SIGPIPE,SIG_DFL)
     options = docopt(doc)
+    if options['--listcolors']:
+        print '\n'.join(x[0] for x in colorListing)
+        return
     patternMap = dict(x.split('=') for x in options['--pattern'])
 
     def addColor(line, colorNames):
