@@ -80,7 +80,7 @@ def main():
 
     def colorize(f):
       for line in f:
-        line = line.strip()
+        line = line.rstrip()
         for pattern in patternMap:
           if pattern in line:
             line = addColor(line, patternMap[pattern])
