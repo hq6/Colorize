@@ -76,7 +76,7 @@ def main():
     if options['--listcolors']:
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
-    patternMap = {y[0].strip(): y[1].strip() for y in (x.split('=') for x in options['--pattern'])}
+    patternMap = {y[0].strip(): y[1].strip() for y in (x.rsplit('=',1) for x in options['--pattern'])}
     removeInvalidMappings(patternMap)
     def colorize(f):
       for line in f:
