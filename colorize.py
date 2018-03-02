@@ -55,6 +55,11 @@ def addColor(line, colorNames):
     colorSequence = colorPrefix + ';'.join(colorMap[x] for x in colorNames.split("|")) + colorSuffix
   return "%s%s%s" % (colorSequence, line, colorReset)
 
+def removeInvalidMappings(patternMap):
+    for x,y in patternMap.items():
+      if ('|' not in y and y not in colorMap) or ('|' in y and any(c not in colorMap for c in y.split("|"))):
+            print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
+            del patternMap[x]
 
 doc = r"""
 Usage: ./colorize.py [-h] [-l] [-p <pattern>]... [<input> ...]
@@ -72,12 +77,7 @@ def main():
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
     patternMap = {y[0].strip(): y[1].strip() for y in (x.split('=') for x in options['--pattern'])}
-    # Validate items
-    for x,y in patternMap.items():
-        if y not in colorMap:
-            print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
-            del patternMap[x]
-
+    removeInvalidMappings(patternMap)
     def colorize(f):
       for line in f:
         line = line.rstrip()
