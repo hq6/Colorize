@@ -19,7 +19,7 @@ Assume we have a file with the following contents.
     unrelated line
     unrelated line
     foobar
-    Different topic=Red
+    Different topic of interest
     unrelated line
 
 Then we can run the following commands to see some of effects we want.
@@ -29,5 +29,5 @@ Then we can run the following commands to see some of effects we want.
     colorize.py -p 'This is an interesting line=Blue' Input.log
     colorize.py -p 'This is an interesting line=Blue' -p 'Different topic=Red' Input.log
 
-    # Note that we run less in raw node
+    # Note that we must run less in raw node to see the colors.
     colorize.py -p 'This is an interesting line=Blue' | less -R
