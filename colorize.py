@@ -81,7 +81,7 @@ def colorMatch(line, patternMap, regexMap):
        parts.append(line[startIndex:m.start()])
        parts.append(addColor(line[m.start():m.end()], regexMap[regex]))
        startIndex = m.end()
-       m = regex.search(line[startIndex:])
+       m = regex.search(line, startIndex)
      parts.append(line[startIndex:])
      line = ''.join(parts)
   return line
