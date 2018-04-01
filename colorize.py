@@ -55,6 +55,38 @@ def addColor(line, colorNames):
     colorSequence = colorPrefix + ';'.join(colorMap[x] for x in colorNames.split("|")) + colorSuffix
   return "%s%s%s" % (colorSequence, line, colorReset)
 
+def colorLine(line, patternMap, regexMap):
+  for pattern in patternMap:
+      if pattern in line:
+          line = addColor(line, patternMap[pattern])
+  for regex in regexMap:
+      if regex.search(line):
+          line = addColor(line, regexMap[regex])
+          # No break, so last match wins.
+  return line
+
+# Only color the parts that match the pattern or regex.
+def colorMatch(line, patternMap, regexMap):
+  for pattern in patternMap:
+      if pattern in line:
+          parts = line.split(pattern)
+          colored = addColor(pattern, patternMap[pattern])
+          line = colored.join(parts)
+
+  for regex in regexMap:
+     parts = []
+     m = regex.search(line)
+     startIndex = 0
+     while m:
+       parts.append(line[startIndex:m.start()])
+       parts.append(addColor(line[m.start():m.end()], regexMap[regex]))
+       startIndex = m.end()
+       m = regex.search(line[startIndex:])
+     parts.append(line[startIndex:])
+     line = ''.join(parts)
+  return line
+
+
 def removeInvalidMappings(patternMap):
     for x,y in patternMap.items():
       if ('|' not in y and y not in colorMap) or ('|' in y and any(c not in colorMap for c in y.split("|"))):
@@ -62,11 +94,13 @@ def removeInvalidMappings(patternMap):
             del patternMap[x]
 
 doc = r"""
-Usage: ./colorize.py [-h] [-l] [-p <pattern>]... [<input> ...]
+Usage: ./colorize.py [-h] [-l] [-n] [-p <pattern>]... [-m <regex>]... [<input> ...]
 
     -h,--help                  show this
-    -p,--pattern <pattern>     specify the pattern in "pattern=color" form.
     -l,--listcolors            show the list of possible colors
+    -p,--pattern <pattern>     specify the pattern in "pattern=color" form.
+    -m,--match <regex>         specify the regex in "regex=color" form.
+    -n,--onlymatch             when set, only the matching part of the line is colorized.
 """
 def main():
     # Handle broken pipes when piping the output of this process to other
@@ -77,13 +111,17 @@ def main():
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
     patternMap = {y[0].strip(): y[1].strip() for y in (x.rsplit('=',1) for x in options['--pattern'])}
+    regexMap = {re.compile("%s" % y[0].strip()): y[1].strip() for y in (x.rsplit('=',1) for x in options['--match'])}
     removeInvalidMappings(patternMap)
+    removeInvalidMappings(regexMap)
+
     def colorize(f):
       for line in f:
         line = line.rstrip()
-        for pattern in patternMap:
-          if pattern in line:
-            line = addColor(line, patternMap[pattern])
+        if not options['--onlymatch']:
+            line = colorLine(line, patternMap, regexMap)
+        else:
+            line = colorMatch(line, patternMap, regexMap)
         print line
 
     if len(options["<input>"]) == 0:
