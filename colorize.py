@@ -124,8 +124,12 @@ def main():
     if options['--listcolors']:
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
-    fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
-    regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
+    try:
+        fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
+        regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
+    except:
+        print "At least one of the fixed strings or regular expressions is missing an '=' sign."
+        return
     removeInvalidMappings(fixedstringMap)
     removeInvalidMappings(regexMap)
 
