@@ -48,6 +48,8 @@ colorSuffix = 'm'
 colorReset = colorPrefix + '0' + colorSuffix
 
 def addColor(line, colorNames):
+  if colorNames == None:
+    return line
   colorSequence = None
   if '|' not in colorNames:
     colorSequence = colorPrefix + colorMap[colorNames] + colorSuffix
@@ -67,24 +69,36 @@ def colorLine(line, patternMap, regexMap):
 
 # Only color the parts that match the pattern or regex.
 def colorMatch(line, patternMap, regexMap):
+  if len(line) == 0: return line
+  # Determine the color for each character
+  characterColors = [None] * len(line)
+
   for pattern in patternMap:
-      if pattern in line:
-          parts = line.split(pattern)
-          colored = addColor(pattern, patternMap[pattern])
-          line = colored.join(parts)
+      startIndex = line.find(pattern)
+      while startIndex != -1:
+        endIndex = startIndex + len(pattern)
+        characterColors[startIndex : endIndex] = [patternMap[pattern]] * (endIndex - startIndex)
+        startIndex = line.find(pattern, endIndex)
 
   for regex in regexMap:
-     parts = []
      m = regex.search(line)
      startIndex = 0
      while m:
-       parts.append(line[startIndex:m.start()])
-       parts.append(addColor(line[m.start():m.end()], regexMap[regex]))
+       characterColors[m.start() : m.end()] = [regexMap[regex]] * (m.end() - m.start())
        startIndex = m.end()
        m = regex.search(line, startIndex)
-     parts.append(line[startIndex:])
-     line = ''.join(parts)
-  return line
+
+  # Postprocess based on the color of each character
+  outLine = ''
+  curColor = characterColors[0]
+  curIndex = 0
+  for i, c in enumerate(characterColors):
+      if c != curColor:
+          outLine += addColor(line[curIndex:i], curColor)
+          curColor = c
+          curIndex = i
+  outLine += addColor(line[curIndex:], curColor)
+  return outLine
 
 
 def removeInvalidMappings(patternMap):
