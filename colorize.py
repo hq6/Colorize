@@ -73,13 +73,6 @@ def colorMatch(line, patternMap, regexMap):
   # Determine the color for each character
   characterColors = [None] * len(line)
 
-  for pattern in patternMap:
-      startIndex = line.find(pattern)
-      while startIndex != -1:
-        endIndex = startIndex + len(pattern)
-        characterColors[startIndex : endIndex] = [patternMap[pattern]] * (endIndex - startIndex)
-        startIndex = line.find(pattern, endIndex)
-
   for regex in regexMap:
      m = regex.search(line)
      startIndex = 0
@@ -87,6 +80,13 @@ def colorMatch(line, patternMap, regexMap):
        characterColors[m.start() : m.end()] = [regexMap[regex]] * (m.end() - m.start())
        startIndex = m.end()
        m = regex.search(line, startIndex)
+
+  for pattern in patternMap:
+      startIndex = line.find(pattern)
+      while startIndex != -1:
+        endIndex = startIndex + len(pattern)
+        characterColors[startIndex : endIndex] = [patternMap[pattern]] * (endIndex - startIndex)
+        startIndex = line.find(pattern, endIndex)
 
   # Postprocess based on the color of each character
   outLine = ''
