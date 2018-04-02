@@ -2,7 +2,7 @@
 
 from sys import argv, stdin, stderr
 from docopt import docopt
-from collections import defaultdict
+from collections import OrderedDict
 import re
 import codecs
 
@@ -124,8 +124,8 @@ def main():
     if options['--listcolors']:
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
-    patternMap = {y[0].strip(): y[1].strip() for y in (x.rsplit('=',1) for x in options['--pattern'])}
-    regexMap = {re.compile("%s" % y[0].strip()): y[1].strip() for y in (x.rsplit('=',1) for x in options['--match'])}
+    patternMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--pattern']))
+    regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
     removeInvalidMappings(patternMap)
     removeInvalidMappings(regexMap)
 
