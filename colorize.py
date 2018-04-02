@@ -57,18 +57,18 @@ def addColor(line, colorNames):
     colorSequence = colorPrefix + ';'.join(colorMap[x] for x in colorNames.split("|")) + colorSuffix
   return "%s%s%s" % (colorSequence, line, colorReset)
 
-def colorLine(line, patternMap, regexMap):
-  for pattern in patternMap:
-      if pattern in line:
-          line = addColor(line, patternMap[pattern])
+def colorLine(line, fixedstringMap, regexMap):
+  for fixedstring in fixedstringMap:
+      if fixedstring in line:
+          line = addColor(line, fixedstringMap[fixedstring])
   for regex in regexMap:
       if regex.search(line):
           line = addColor(line, regexMap[regex])
           # No break, so last match wins.
   return line
 
-# Only color the parts that match the pattern or regex.
-def colorMatch(line, patternMap, regexMap):
+# Only color the parts that match the fixedstring or regex.
+def colorMatch(line, fixedstringMap, regexMap):
   if len(line) == 0: return line
   # Determine the color for each character
   characterColors = [None] * len(line)
@@ -81,12 +81,12 @@ def colorMatch(line, patternMap, regexMap):
        startIndex = m.end()
        m = regex.search(line, startIndex)
 
-  for pattern in patternMap:
-      startIndex = line.find(pattern)
+  for fixedstring in fixedstringMap:
+      startIndex = line.find(fixedstring)
       while startIndex != -1:
-        endIndex = startIndex + len(pattern)
-        characterColors[startIndex : endIndex] = [patternMap[pattern]] * (endIndex - startIndex)
-        startIndex = line.find(pattern, endIndex)
+        endIndex = startIndex + len(fixedstring)
+        characterColors[startIndex : endIndex] = [fixedstringMap[fixedstring]] * (endIndex - startIndex)
+        startIndex = line.find(fixedstring, endIndex)
 
   # Postprocess based on the color of each character
   outLine = ''
@@ -101,20 +101,20 @@ def colorMatch(line, patternMap, regexMap):
   return outLine
 
 
-def removeInvalidMappings(patternMap):
-    for x,y in patternMap.items():
+def removeInvalidMappings(fixedstringMap):
+    for x,y in fixedstringMap.items():
       if ('|' not in y and y not in colorMap) or ('|' in y and any(c not in colorMap for c in y.split("|"))):
             print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
-            del patternMap[x]
+            del fixedstringMap[x]
 
 doc = r"""
-Usage: ./colorize.py [-h] [-l] [-n] [-p <pattern>]... [-m <regex>]... [<input> ...]
+Usage: ./colorize.py [-h] [-l] [-n] [-f <fixedstring>]... [-m <regex>]... [<input> ...]
 
-    -h,--help                  show this
-    -l,--listcolors            show the list of possible colors
-    -p,--pattern <pattern>     specify the pattern in "pattern=color" form.
-    -m,--match <regex>         specify the regex in "regex=color" form.
-    -n,--onlymatch             when set, only the matching part of the line is colorized.
+    -h,--help                       show this
+    -l,--listcolors                 show the list of possible colors
+    -f,--fixedstring <fixedstring>  specify the fixedstring in "fixedstring=color" form.
+    -m,--match <regex>              specify the regex in "regex=color" form.
+    -n,--onlymatch                  when set, only the matching part of the line is colorized.
 """
 def main():
     # Handle broken pipes when piping the output of this process to other
@@ -124,18 +124,18 @@ def main():
     if options['--listcolors']:
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
-    patternMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--pattern']))
+    fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
     regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
-    removeInvalidMappings(patternMap)
+    removeInvalidMappings(fixedstringMap)
     removeInvalidMappings(regexMap)
 
     def colorize(f):
       for line in f:
         line = line.rstrip()
         if not options['--onlymatch']:
-            line = colorLine(line, patternMap, regexMap)
+            line = colorLine(line, fixedstringMap, regexMap)
         else:
-            line = colorMatch(line, patternMap, regexMap)
+            line = colorMatch(line, fixedstringMap, regexMap)
         print line
 
     if len(options["<input>"]) == 0:

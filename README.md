@@ -26,8 +26,8 @@ Then we can run the following commands to see some of effects we want.
 
     colorize.py -h
     colorize.py -l
-    colorize.py -p 'This is an interesting line=Blue' Input.log
-    colorize.py -p 'This is an interesting line=Blue' -p 'Different topic=Red' Input.log
+    colorize.py -f 'This is an interesting line=Blue' Input.log
+    colorize.py -f 'This is an interesting line=Blue' -f 'Different topic=Red' Input.log
 
     # Note that we must run less in raw node to see the colors.
-    colorize.py -p 'This is an interesting line=Blue' | less -R
+    colorize.py -f 'This is an interesting line=Blue' | less -R
