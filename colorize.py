@@ -127,6 +127,9 @@ def main():
     try:
         fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
         regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
+    except re.error as err:
+        print "Error parsing regular expression:", err
+        return
     except:
         print "At least one of the fixed strings or regular expressions is missing an '=' sign."
         return
