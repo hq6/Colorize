@@ -58,13 +58,16 @@ def addColor(line, colorNames):
   return "%s%s%s" % (colorSequence, line, colorReset)
 
 def colorLine(line, fixedstringMap, regexMap):
-  for fixedstring in fixedstringMap:
-      if fixedstring in line:
-          line = addColor(line, fixedstringMap[fixedstring])
+  outLine = None
   for regex in regexMap:
       if regex.search(line):
-          line = addColor(line, regexMap[regex])
+          outLine = addColor(line, regexMap[regex])
           # No break, so last match wins.
+  for fixedstring in fixedstringMap:
+      if fixedstring in line:
+          outLine = addColor(line, fixedstringMap[fixedstring])
+  if outLine:
+    return outLine
   return line
 
 # Only color the parts that match the fixedstring or regex.
