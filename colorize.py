@@ -8,7 +8,7 @@ import codecs
 
 from signal import signal, SIGPIPE, SIG_DFL
 
-colorListing = map(lambda x: (x[0].strip(), x[1].strip()), [
+colors = [
 ("Black            " , "30"),
 ("Red              " , "31"),
 ("Green            " , "32"),
@@ -41,7 +41,8 @@ colorListing = map(lambda x: (x[0].strip(), x[1].strip()), [
 ("BG_Bright Magenta" , "105"),
 ("BG_Bright Cyan   " , "106"),
 ("BG_Bright White  " , "107"),
-])
+]
+colorListing = map(lambda x: (x[0].strip(), x[1].strip()), colors)
 colorMap = {x[0].strip() : x[1] for x in colorListing}
 colorPrefix = '\033['
 colorSuffix = 'm'
