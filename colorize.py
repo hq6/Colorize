@@ -42,6 +42,19 @@ colors = [
 ("BG_Bright Cyan   " , "106"),
 ("BG_Bright White  " , "107"),
 ]
+
+def importUserColors():
+    # Try to import custom colors if the file exists
+    from custom_colors import user_colors
+    for x in user_colors:
+        colors.append(x.convertToNameAndEscape())
+
+try:
+    importUserColors()
+except ImportError:
+    pass
+
+
 colorListing = map(lambda x: (x[0].strip(), x[1].strip()), colors)
 colorMap = OrderedDict((x[0].strip() , x[1]) for x in colorListing)
 
