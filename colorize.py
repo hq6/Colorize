@@ -104,20 +104,30 @@ def colorMatch(line, fixedstringMap, regexMap):
   return outLine
 
 
+def isValidColor(color):
+    return (color in colorMap) or ('|' in color and all(c in colorMap for c in color.split("|")))
+
 def removeInvalidMappings(fixedstringMap):
     for x,y in fixedstringMap.items():
-      if ('|' not in y and y not in colorMap) or ('|' in y and any(c not in colorMap for c in y.split("|"))):
+      if not isValidColor(y):
             print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
             del fixedstringMap[x]
 
+def createColoredLine(chars, color, length=80):
+    out = ""
+    for i in xrange(length):
+        out += chars[i % len(chars)]
+    return addColor(out, color)
+
 doc = r"""
-Usage: ./colorize.py [-h] [-l] [-n] [-f <fixedstring>]... [-m <regex>]... [<input> ...]
+Usage: ./colorize.py [-h] [-l] [-g <color>] [-n] [-f <fixedstring>]... [-m <regex>]... [<input> ...]
 
     -h,--help                       show this
     -l,--listcolors                 show the list of possible colors
     -f,--fixedstring <fixedstring>  specify the fixedstring in "fixedstring=color" form.
     -m,--match <regex>              specify the regex in "regex=color" form.
     -n,--onlymatch                  when set, only the matching part of the line is colorized.
+    -g,--generate <color>           generate a horizontal line of the specified color
 """
 def main():
     # Handle broken pipes when piping the output of this process to other
@@ -127,6 +137,17 @@ def main():
     if options['--listcolors']:
         print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
         return
+    if options['--generate']:
+        symbol = "="
+        color = None
+        if '=' in options['--generate']: symbol, color = options['--generate'].rsplit('=',1)
+        else: color = options['--generate']
+        if isValidColor(color):
+            print createColoredLine(symbol, color)
+        else:
+            print addColor("ERROR: Invalid color '%s' specified!" % color, "Bright Red")
+        return
+
     try:
         fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
         regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
