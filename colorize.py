@@ -44,11 +44,12 @@ colors = [
 ]
 colorListing = map(lambda x: (x[0].strip(), x[1].strip()), colors)
 colorMap = {x[0].strip() : x[1] for x in colorListing}
-colorPrefix = '\033['
-colorSuffix = 'm'
-colorReset = colorPrefix + '0' + colorSuffix
 
 def addColor(line, colorNames):
+  colorPrefix = '\033['
+  colorSuffix = 'm'
+  colorReset = colorPrefix + '0' + colorSuffix
+
   if colorNames == None:
     return line
   colorSequence = None
