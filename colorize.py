@@ -195,3 +195,11 @@ def main():
 if __name__ == '__main__':
     main()
 
+else:
+    # Define a bunch of names for another Python library to use
+    def generateColorMacro(color):
+        # This wrapper is necessary to prevent the lambda from pointing at the
+        # global version of the color variable.
+        return lambda x : addColor(x, color)
+    for color in colorMap:
+        globals()[color.upper()] = generateColorMacro(color)
