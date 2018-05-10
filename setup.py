@@ -44,9 +44,10 @@ Then we can run the following commands to see some of effects we want::
 
 setup(
   name="colorize.py",
-  version='0.7',
+  version='0.8',
   scripts=['colorize.py'],
   install_requires=['docopt>=0.2'],
+  python_requires='>=2.7,  !=3.0.*, !=3.1.*, !=3.2.*, <4',
   author="Henry Qin",
   author_email="root@hq6.me",
   description="Add colors to plain text lines matching either a Python string or regular expression",
