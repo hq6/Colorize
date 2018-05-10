@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from sys import argv, stdin, stderr
 from docopt import docopt
 from collections import OrderedDict
@@ -112,12 +113,12 @@ def isValidColor(color):
 def removeInvalidMappings(fixedstringMap):
     for x,y in fixedstringMap.items():
       if not isValidColor(y):
-            print >> stderr, addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red")
+            print(addColor("WARNING: Removing mapping '%s' --> '%s' due to unknown color '%s'." % (x,y,y), "Bright Red"), file=sys.stderr)
             del fixedstringMap[x]
 
 def createColoredLine(chars, color, length=80):
     out = ""
-    for i in xrange(length):
+    for i in range(length):
         out += chars[i % len(chars)]
     return addColor(out, color)
 
@@ -137,7 +138,7 @@ def main():
     signal(SIGPIPE,SIG_DFL)
     options = docopt(doc)
     if options['--listcolors']:
-        print '\n'.join(addColor(x[0], x[0]) for x in colorListing)
+        print('\n'.join(addColor(x[0], x[0]) for x in colorListing))
         return
     if options['--generate']:
         symbol = "="
@@ -145,19 +146,19 @@ def main():
         if '=' in options['--generate']: symbol, color = options['--generate'].rsplit('=',1)
         else: color = options['--generate']
         if isValidColor(color):
-            print createColoredLine(symbol, color)
+            print(createColoredLine(symbol, color))
         else:
-            print addColor("ERROR: Invalid color '%s' specified!" % color, "Bright Red")
+            print(addColor("ERROR: Invalid color '%s' specified!" % color, "Bright Red"))
         return
 
     try:
         fixedstringMap = OrderedDict((y[0].strip(), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--fixedstring']))
         regexMap = OrderedDict((re.compile("%s" % y[0].strip()), y[1].strip()) for y in (x.rsplit('=',1) for x in options['--match']))
     except re.error as err:
-        print "Error parsing regular expression:", err
+        print("Error parsing regular expression:", err)
         return
     except:
-        print "At least one of the fixed strings or regular expressions is missing an '=' sign."
+        print("At least one of the fixed strings or regular expressions is missing an '=' sign.")
         return
     removeInvalidMappings(fixedstringMap)
     removeInvalidMappings(regexMap)
@@ -169,7 +170,7 @@ def main():
             line = colorLine(line, fixedstringMap, regexMap)
         else:
             line = colorMatch(line, fixedstringMap, regexMap)
-        print line
+        print(line)
 
     if len(options["<input>"]) == 0:
       colorize(stdin)
