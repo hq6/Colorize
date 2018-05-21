@@ -10,7 +10,17 @@ The purpose of this tool is to colorize lines matching a particular pattern, to
 make it easier to highlight relevant lines in a log file, when poring over such
 files with your coworker or manager.
 
-### Usage
+## Installation
+
+To install system-wide, run
+
+    sudo pip install colorize.py
+
+To install for yourself (under `$HOME/.local`)
+
+    pip install --user colorize.py
+
+## Usage
 
 Assume we have a file with the following contents.
 
