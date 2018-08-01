@@ -14,8 +14,8 @@ def main():
             colorSuffix for color in colorMap]
     definitionMaxLength = min(max(len(x) for x in colorMacroDefinitions), 12)
 
-    print "#ifndef COLOR_H"
-    print "#define COLOR_H"
+    print "#ifndef COLORS_H"
+    print "#define COLORS_H"
     for n, d in zip(colorMacroNames, colorMacroDefinitions):
         output = '#define %-*s ' % (nameMaxLength, n)
         output += '%-*s X %s' % (definitionMaxLength, d, colorReset)
