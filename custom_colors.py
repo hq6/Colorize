@@ -21,5 +21,5 @@ class Color:
 # for background colors.
 ################################################################################
 user_colors = [
-    Color("SkyBlue", (40,177,249))
+#    Color("SkyBlue", (40,177,249))
 ]
