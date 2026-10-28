@@ -43,7 +43,7 @@ colors = [
 ("BG_Bright Cyan   " , "106"),
 ("BG_Bright White  " , "107"),
 ]
-colorListing = map(lambda x: (x[0].strip(), x[1].strip()), colors)
+colorListing = list(map(lambda x: (x[0].strip(), x[1].strip()), colors))
 colorMap = OrderedDict((x[0].strip() , x[1]) for x in colorListing)
 
 def addColor(line, colorNames):
