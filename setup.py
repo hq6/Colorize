@@ -44,7 +44,7 @@ Then we can run the following commands to see some of effects we want::
 
 setup(
   name="colorize.py",
-  version='0.9.1',
+  version='0.9.2',
   scripts=['colorize.py'],
   install_requires=['docopt>=0.2'],
   python_requires='>=2.7',
